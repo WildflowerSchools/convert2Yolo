@@ -22,6 +22,7 @@ parser.add_argument('--manifest_path', type=str,
                     help='directory of manipast file', default="./")
 parser.add_argument('--cls_list_file', type=str,
                     help='directory of *.names file', default="./")
+parser.add_argument('--relative_image_path', type=str, default=None, help="Set relative image path written to the manifest file")
 
 
 args = parser.parse_args()
@@ -64,7 +65,7 @@ def main(config):
 
             if flag == True:
                 flag, data = yolo.save(data, config["output_path"], config["img_path"],
-                                       config["img_type"], config["manifest_path"])
+                                       config["img_type"], config["manifest_path"], relative_image_path=config["relative_image_path"])
 
                 if flag == False:
                     print("Saving Result : {}, msg : {}".format(flag, data))
@@ -134,6 +135,7 @@ if __name__ == '__main__':
         "manifest_path": args.manifest_path,
         "output_path": args.convert_output_path,
         "cls_list": args.cls_list_file,
+        "relative_image_path": args.relative_image_path
     }
 
     main(config)

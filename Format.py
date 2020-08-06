@@ -785,7 +785,7 @@ class YOLO:
 
             return False, msg
 
-    def save(self, data, save_path, img_path, img_type, manifest_path):
+    def save(self, data, save_path, img_path, img_type, manifest_path, relative_image_path=None):
 
         try:
 
@@ -795,15 +795,22 @@ class YOLO:
                 15), suffix='Complete', length=40)
 
             if os.path.isdir(manifest_path):
-                manifest_abspath = os.path.join(manifest_path, "manifest.txt")
+                manifest_file_path = os.path.join(manifest_path, "manifest.txt")
             else:
-                manifest_abspath = manifest_path
+                manifest_file_path = manifest_path
 
-            with open(os.path.abspath(manifest_abspath), "w") as manifest_file:
+            manifest_abspath = os.path.abspath(manifest_file_path)
+            with open(manifest_abspath, "w") as manifest_file:
 
                 for key in data:
-                    manifest_file.write(os.path.abspath(os.path.join(
-                        img_path, "".join([key, img_type, "\n"]))))
+                    image_absolute_path = os.path.abspath(os.path.join(
+                        img_path, "".join([key, img_type, "\n"])))
+
+                    final_image_path = image_absolute_path
+                    if relative_image_path is not None:
+                        final_image_path = os.path.join(relative_image_path, os.path.basename(image_absolute_path))
+
+                    manifest_file.write(final_image_path)
 
                     with open(os.path.abspath(os.path.join(save_path, "".join([key, ".txt"]))), "w") as output_txt_file:
                         output_txt_file.write(data[key])
