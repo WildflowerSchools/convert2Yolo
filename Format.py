@@ -391,6 +391,7 @@ class COCO:
                     }
 
                     data[filename] = {
+                        "id": image_id,
                         "size": size,
                         "objects": obj
                     }
@@ -785,7 +786,7 @@ class YOLO:
 
             return False, msg
 
-    def save(self, data, save_path, img_path, img_type, manifest_path, relative_image_path=None):
+    def save(self, data, save_path, img_path, img_type, manifest_path, relative_image_path=None, coco_compatible_image_names=None):
 
         try:
 
@@ -804,15 +805,25 @@ class YOLO:
 
                 for key in data:
                     image_absolute_path = os.path.abspath(os.path.join(
-                        img_path, "".join([key, img_type, "\n"])))
+                        img_path, "".join([key, img_type])))
 
                     final_image_path = image_absolute_path
                     if relative_image_path is not None:
                         final_image_path = os.path.join(relative_image_path, os.path.basename(image_absolute_path))
 
-                    manifest_file.write(final_image_path)
+                    image_name = key
+                    if coco_compatible_image_names:
+                        if key != coco_compatible_image_names[key]:
+                            new_image_absolute_path = image_absolute_path.replace(key, coco_compatible_image_names[key])
+                            final_image_path = final_image_path.replace(key, coco_compatible_image_names[key])
 
-                    with open(os.path.abspath(os.path.join(save_path, "".join([key, ".txt"]))), "w") as output_txt_file:
+                            os.rename(image_absolute_path, new_image_absolute_path)
+
+                            image_name = coco_compatible_image_names[key]
+
+                    manifest_file.write(final_image_path + "\n")
+
+                    with open(os.path.abspath(os.path.join(save_path, "".join([image_name, ".txt"]))), "w") as output_txt_file:
                         output_txt_file.write(data[key])
 
                     printProgressBar(progress_cnt + 1, progress_length, prefix='YOLO Saving:'.ljust(15),

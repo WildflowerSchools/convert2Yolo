@@ -57,6 +57,14 @@ def main(config):
 
         flag, data, cls_hierarchy = coco.parse(
             config["label"], config["img_path"])
+
+        coco_compatible_image_names = {}
+        for key in data:
+            coco_compatible_image_names[key] = key
+
+            if key.split("_")[-1] != key:
+                coco_compatible_image_names[key] = "%s_%s" % (key, data[key]['id'])
+
         yolo = YOLO(os.path.abspath(
             config["cls_list"]), cls_hierarchy=cls_hierarchy)
 
@@ -65,7 +73,9 @@ def main(config):
 
             if flag == True:
                 flag, data = yolo.save(data, config["output_path"], config["img_path"],
-                                       config["img_type"], config["manifest_path"], relative_image_path=config["relative_image_path"])
+                                       config["img_type"], config["manifest_path"],
+                                       relative_image_path=config["relative_image_path"],
+                                       coco_compatible_image_names=coco_compatible_image_names)
 
                 if flag == False:
                     print("Saving Result : {}, msg : {}".format(flag, data))
