@@ -58,17 +58,16 @@ def main(config):
         flag, data, cls_hierarchy = coco.parse(
             config["label"], config["img_path"])
 
-        coco_compatible_image_names = {}
-        for key in data:
-            coco_compatible_image_names[key] = key
+        if flag == True:
+            coco_compatible_image_names = {}
+            for key in data:
+                coco_compatible_image_names[key] = key
 
             if key.split("_")[-1] != key:
                 coco_compatible_image_names[key] = "%s_%s" % (key, data[key]['id'])
 
-        yolo = YOLO(os.path.abspath(
-            config["cls_list"]), cls_hierarchy=cls_hierarchy)
+            yolo = YOLO(os.path.abspath(config["cls_list"]), cls_hierarchy=cls_hierarchy)
 
-        if flag == True:
             flag, data = yolo.generate(data)
 
             if flag == True:

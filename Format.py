@@ -411,7 +411,7 @@ class COCO:
             msg = "ERROR : {}, moreInfo : {}\t{}\t{}".format(
                 e, exc_type, fname, exc_tb.tb_lineno)
 
-            return False, msg
+            return False, msg, None
 
 
 class UDACITY:
